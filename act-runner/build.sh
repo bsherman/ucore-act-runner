@@ -25,3 +25,6 @@ rpm-ostree install \
   syslinux \
   xorriso \
   yamllint
+
+./gitea-release-download.sh gitea/act_runner linux-amd64 /usr/bin/act_runner
+chmod a+xr /usr/bin/act_runner

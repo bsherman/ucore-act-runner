@@ -44,7 +44,7 @@ jobs:
     name: Build Act Runner
     runs-on: ubuntu-22.04
     if: always() && !cancelled()
-    needs: [ build_info
+    needs: [ build_info ]
     permissions:
       contents: read
       packages: write

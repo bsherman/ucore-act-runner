@@ -56,7 +56,6 @@ jobs:
           - ucore-act-runner
         coreos_version:
           - stable
-          - testing
         pr_prefix:
           - ${{ needs.build_info.outputs.pr_prefix }}
     steps:

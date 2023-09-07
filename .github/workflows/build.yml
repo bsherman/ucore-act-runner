@@ -40,41 +40,11 @@ jobs:
         run: |
           echo "${{ toJSON(steps.pr_prefix.outputs) }}"
 
-  coreos_versions:
-    name: Get CoreOS versions
-    runs-on: ubuntu-latest
-    outputs:
-      stable_linux: ${{ steps.stable.outputs.linux }}
-      stable_version: ${{ steps.stable.outputs.version }}
-      testing_linux: ${{ steps.testing.outputs.linux }}
-      testing_version: ${{ steps.testing.outputs.version }}
-    steps:
-      - name: Fetch CoreOS stable versions
-        id: stable
-        run: |
-          skopeo inspect docker://quay.io/fedora/fedora-coreos:stable > inspect.json
-          linux=$(jq -r '.["Labels"]["ostree.linux"]' inspect.json)
-          echo "linux=$linux" >> $GITHUB_OUTPUT
-          version=$(jq -r '.["Labels"]["version"]' inspect.json)
-          echo "version=$version" >> $GITHUB_OUTPUT
-      - name: Fetch CoreOS testing versions
-        id: testing
-        run: |
-          skopeo inspect docker://quay.io/fedora/fedora-coreos:testing > inspect.json
-          linux=$(jq -r '.["Labels"]["ostree.linux"]' inspect.json)
-          echo "linux=$linux" >> $GITHUB_OUTPUT
-          version=$(jq -r '.["Labels"]["version"]' inspect.json)
-          echo "version=$version" >> $GITHUB_OUTPUT
-      - name: Echo outputs
-        run: |
-          echo "${{ toJSON(steps.stable.outputs) }}"
-          echo "${{ toJSON(steps.testing.outputs) }}"
-
   build_act_runner:
     name: Build Act Runner
     runs-on: ubuntu-22.04
     if: always() && !cancelled()
-    needs: [ build_info, coreos_versions]
+    needs: [ build_info
     permissions:
       contents: read
       packages: write
@@ -89,11 +59,6 @@ jobs:
           - testing
         pr_prefix:
           - ${{ needs.build_info.outputs.pr_prefix }}
-        include:
-          - coreos_version: stable
-            image_version: ${{ needs.coreos_versions.outputs.stable_version }}
-          - coreos_version: testing
-            image_version: ${{ needs.coreos_versions.outputs.testing_version }}
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -155,8 +120,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./act-runner/Containerfile
-          context: ./act-runner
+            ./Containerfile
           image: ${{ matrix.image_name }}
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}

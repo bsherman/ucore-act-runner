@@ -1,0 +1,19 @@
+[Unit]
+Description=Act Runner
+Requires=podman-docker-socket.service
+After=podman-docker-socket.service
+
+[Container]
+Image=docker.io/gitea/act_runner:latest
+EnvironmentFile=/etc/containers/systemd/act-runner.env
+# rely on global disable of labels due to spawned act containers not respecting this
+#SecurityLabelDisable=true
+Volume=/etc/containers/systemd/act-runner-config.yaml:/config.yaml:ro
+Volume=/var/act_data:/data
+Volume=/var/run/docker.sock:/var/run/docker.sock
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

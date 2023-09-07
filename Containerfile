@@ -1,11 +1,12 @@
 ARG COREOS_VERSION="${COREOS_VERSION:-stable}"
 
-FROM quay.io/fedora/fedora-coreos:${COREOS_VERSION}
+FROM ghcr.io/ublue-os/ucore:${COREOS_VERSION}
+
 
 ARG COREOS_VERSION="${COREOS_VERSION:-stable}"
 
-ADD build.sh /tmp/build.sh
-ADD gitea-release-download.sh /tmp/gitea-release-download.sh
+COPY build.sh /tmp/build.sh
+COPY etc /etc
 
 # enable testing repos if not enabled on testing stream
 RUN if [[ "testing" == "${COREOS_VERSION}" ]]; then \
@@ -21,9 +22,9 @@ fi
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-cisco-openh264.repo
 
 # install packages
-RUN mkdir -p /var/lib/alternatives
-RUN /tmp/build.sh
-RUN mv /var/lib/alternatives /staged-alternatives \
+RUN mkdir -p /var/lib/alternatives \
+    && /tmp/build.sh \
+    && mv /var/lib/alternatives /staged-alternatives \
     && rm -fr /tmp/* /var/* \
     && rpm-ostree cleanup -m \
     && ostree container commit \

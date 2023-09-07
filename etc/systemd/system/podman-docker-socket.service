@@ -1,0 +1,11 @@
+[Unit]
+Description=symlink podman.socket to docker.socket
+
+[Service]
+Type=oneshot
+StandardOutput=journal+console
+RemainAfterExit=yes
+ExecStart=ln -sf /run/podman/podman.sock /var/run/docker.sock
+
+[Install]
+WantedBy=default.target

@@ -2,12 +2,16 @@
 Description=Act Runner
 # the act-runner.env file must be created (see example) before this will run
 ConditionPathExists=/etc/containers/systemd/act-runner.env
+After=network-online.target podman-docker-socket.service
 Requires=podman-docker-socket.service
-After=podman-docker-socket.service
+Wants=network-online.target
 
 [Container]
 Image=docker.io/gitea/act_runner:latest
 EnvironmentFile=/etc/containers/systemd/act-runner.env
+Label=io.containers.autoupdate=registry
+# host networking allows the runner to use hostname of system as its name
+Network=host
 # rely on global disable of labels due to spawned act containers not respecting this
 #SecurityLabelDisable=true
 Volume=/etc/containers/systemd/act-runner-config.yaml:/config.yaml:ro

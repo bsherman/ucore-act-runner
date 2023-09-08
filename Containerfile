@@ -6,7 +6,7 @@ FROM ghcr.io/ublue-os/ucore:${COREOS_VERSION}
 ARG COREOS_VERSION="${COREOS_VERSION:-stable}"
 
 COPY build.sh /tmp/build.sh
-COPY etc /etc
+COPY usr /usr
 
 # enable testing repos if not enabled on testing stream
 RUN if [[ "testing" == "${COREOS_VERSION}" ]]; then \

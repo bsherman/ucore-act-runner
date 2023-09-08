@@ -1,5 +1,7 @@
 [Unit]
 Description=Act Runner
+# the act-runner.env file must be created (see example) before this will run
+ConditionPathExists=/etc/containers/systemd/act-runner.env
 Requires=podman-docker-socket.service
 After=podman-docker-socket.service
 

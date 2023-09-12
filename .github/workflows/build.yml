@@ -40,11 +40,32 @@ jobs:
         run: |
           echo "${{ toJSON(steps.pr_prefix.outputs) }}"
 
+  coreos_versions:
+    name: Get CoreOS versions
+    runs-on: ubuntu-latest
+    outputs:
+      stable_linux: ${{ steps.stable.outputs.linux }}
+      stable_version: ${{ steps.stable.outputs.version }}
+      testing_linux: ${{ steps.testing.outputs.linux }}
+      testing_version: ${{ steps.testing.outputs.version }}
+    steps:
+      - name: Fetch CoreOS stable versions
+        id: stable
+        run: |
+          skopeo inspect docker://ghcr.io/ublue-os/ucore:stable > inspect.json
+          linux=$(jq -r '.["Labels"]["ostree.linux"]' inspect.json)
+          echo "linux=$linux" >> $GITHUB_OUTPUT
+          version=$(jq -r '.["Labels"]["version"]' inspect.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Echo outputs
+        run: |
+          echo "${{ toJSON(steps.stable.outputs) }}"
+
   build_act_runner:
     name: Build Act Runner
     runs-on: ubuntu-22.04
     if: always() && !cancelled()
-    needs: [ build_info ]
+    needs: [ build_info, coreos_versions ]
     permissions:
       contents: read
       packages: write
@@ -58,6 +79,9 @@ jobs:
           - stable
         pr_prefix:
           - ${{ needs.build_info.outputs.pr_prefix }}
+        include:
+          - coreos_version: stable
+            image_version: ${{ needs.coreos_versions.outputs.stable_version }}
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action

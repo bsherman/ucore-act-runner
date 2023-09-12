@@ -14,6 +14,7 @@ Changes:
 - configures a [quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) which auto runs act_runner
     - requires its EnvironmentFile to be provisioned before the service will attempt to start (can be done manually or with ignition, etc)
     - is configured for container to use Host networking to simplify the naming of the act_runner instance
+- configures act_runner to use privileged mode enabling docker-in-docker builds
 
 ## Usage
 

@@ -59,7 +59,7 @@ container:
   # If it's empty, act_runner will create a network automatically.
   network: ""
   # Whether to use privileged mode or not when launching task containers (privileged mode is required for Docker-in-Docker).
-  privileged: false
+  privileged: true
   # And other options to be used when the container is started (eg, --add-host=my.gitea.url:host-gateway).
   options:
   # The parent directory of a job's working directory.

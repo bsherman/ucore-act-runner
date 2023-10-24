@@ -24,10 +24,8 @@ RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-cisco-openh264.repo
 # install packages
 RUN mkdir -p /var/lib/alternatives \
     && /tmp/build.sh \
-    && mv /var/lib/alternatives /staged-alternatives \
     && rm -fr /tmp/* /var/* \
     && rpm-ostree cleanup -m \
     && ostree container commit \
-    && mkdir -p /var/lib && mv /staged-alternatives /var/lib/alternatives \
     && mkdir -p /tmp /var/tmp \
     && chmod -R 1777 /tmp /var/tmp
